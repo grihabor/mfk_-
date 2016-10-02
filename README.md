@@ -3,6 +3,9 @@
   - курсах
   - студентах
   - том, кто куда записался
+
 ## Запуск
-''' python run.py
+```
+python run.py
+```
 Для работы скрипта требуется python3 и [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/)
