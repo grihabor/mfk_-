@@ -12,24 +12,12 @@ URL_PARAMS_ALL = ['CourseSearch[name_ru]=',
 
 student_keys = ['name', 'faculty', 'study_mode', 'degree', 'year']
 course_keys = ['name', 'faculty', 'online', 'status']
-'''
-class Student:
-    def __init__(self, params):
-        self.name = params['name']
-        self.faculty = params['faculty']
-        self.study_mode = params['study_mode']
-        self.degree = params['degree']
-        self.year = params['year']
-        self.courses = {}
 
-    def __eq__(self, other):
-        if self.name != other.name:
-            return False
-        return self.faculty == other.faculty and\
-            self.study_mode == other.study_mode and\
-                self.degree == other.degree and\
-                  self.year == other.year
-'''
+all_student_keys        = ['name', 'faculty',   'degree',         'year', 'study_mode',     'courses']
+all_student_key_labels  = ['Имя',  'Факультет', 'Вид подготовки', 'Курс', 'Форма обучения', 'Записался на курсы']
+all_course_keys         = ['id', 'name',           'faculty',   'taken_places', 'total_places', 'online', 'status']
+all_course_key_labels   = ['Id', 'Название курса', 'Факультет', 'Записалось',   'Всего мест',   'Online', 'Статус']
+
 
 def courses_list_url(page = 1):
     return '{}list?{}'.format(BASE_URL, '&'.join(URL_PARAMS_ALL + ['page={}'.format(page + 1)]))
@@ -124,17 +112,15 @@ def students_course_count(students):
     return course_count
 
 
-def save_to_scv(courses, students):
+def save_to_scv(courses, students, course_labels=[], student_labels=[]):
 
     with open('students.csv', 'w') as f:
         writer = csv.writer(f, delimiter=';')
         for i, student in enumerate(students.values()):
             # header
             if i == 0:
-                keys = [key for key in student.keys() if key != 'courses']
-                keys.append('courses')
-                writer.writerow(keys)
-            row = [str(student[key])for key in keys if key != 'courses']
+                writer.writerow(all_student_key_labels)
+            row = [str(student[key])for key in all_student_keys if key != 'courses']
             row.append(':'.join([str(course_id) for course_id in student['courses']]))
             writer.writerow(row)
 
@@ -143,29 +129,25 @@ def save_to_scv(courses, students):
         for i, course in enumerate(courses.values()):
             # header
             if i == 0:
-                keys = course.keys()
-                writer.writerow(keys)
-            writer.writerow([str(course[key]) for key in keys])
-
-
-
+                writer.writerow(all_course_key_labels)
+            writer.writerow([str(course[key]) for key in all_course_keys])
 
 def load_from_csv():
     courses = {}
     students = {}
     with open('courses.csv') as f:
         reader = csv.reader(f, delimiter=';')
-        keys = next(reader)
+        next(reader)
         for row in reader:
-            course = {key: value for key, value in zip(keys, row)}
+            course = {key: value for key, value in zip(all_course_keys, row)}
             course['id'] = int(course['id'])
             courses[course['id']] = course
 
     with open('students.csv') as f:
         reader = csv.reader(f, delimiter=';')
-        keys = next(reader)
+        next(reader)
         for row in reader:
-            student = {key: value for key, value in zip(keys, row)}
+            student = {key: value for key, value in zip(all_student_keys, row)}
             student['courses'] = set([int(course_id) for course_id in student['courses'].split(':')])
             students[student['name']] = student
 
