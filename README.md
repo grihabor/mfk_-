@@ -5,7 +5,8 @@
   - том, кто куда записался
 
 ## Запуск
+Для работы скрипта требуется python3.
 ```
+pip install -r requirements.txt
 python run.py
 ```
-Для работы скрипта требуется python3 и [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/)
