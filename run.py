@@ -1,6 +1,6 @@
 from mfk import MFKManager
 
-mfkman = MFKManager()
+mfkman = MFKManager(fall_year=2016, semester_number=2)
 
 courses, students = mfkman.load_all(True)
 print(mfkman.get_keys(courses))

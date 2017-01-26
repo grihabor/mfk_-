@@ -33,7 +33,6 @@ class MFKManager:
             fall_year=fall_year, semester_number=semester_number
         ))
 
-
     def get_courses(self):
         courses = []
 
@@ -64,7 +63,7 @@ class MFKManager:
                 if i == 0:
                     writer.writerow(student_columns.values())
                 row = [str(student[key])for key in student_columns if key != 'courses']
-                row.append(':'.join([str(course_id) for course_id in student['courses']]))
+                row.append(', '.join([str(course_id) for course_id in student['courses']]))
                 writer.writerow(row)
 
         with open('courses.csv', 'w') as f:
