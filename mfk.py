@@ -14,9 +14,6 @@ URL_PARAMS_TEMPLATE = ['CourseSearch[name_ru]={name_ru}',
 student_keys = ['name', 'faculty', 'study_mode', 'degree', 'year']
 course_keys = ['name', 'faculty', 'online', 'status']
 
-all_student_keys = ['name', 'faculty',   'degree',         'year', 'study_mode',     'courses']
-all_student_key_labels = ['Имя',  'Факультет', 'Вид подготовки', 'Курс', 'Форма обучения', 'Записался на курсы']
-
 student_columns = OrderedDict()
 student_columns['name'] = 'Имя'
 student_columns['faculty'] = 'Факультет'
@@ -25,10 +22,14 @@ student_columns['year'] = 'Курс'
 student_columns['study_mode'] = 'Форма обучения'
 student_columns['courses'] = 'Записался на курсы'
 
-
-all_course_keys = ['id', 'name',           'faculty',   'taken_places', 'total_places', 'online', 'status']
-all_course_key_labels = ['Id', 'Название курса', 'Факультет', 'Записалось',   'Всего мест',   'Online', 'Статус']
-
+course_columns = OrderedDict()
+course_columns['id'] = 'Id'
+course_columns['name'] = 'Название курса'
+course_columns['faculty'] = 'Факультет'
+course_columns['taken_places'] = 'Записалось'
+course_columns['total_places'] = 'Всего мест'
+course_columns['online'] = 'Online'
+course_columns['status'] = 'Статус'
 
 class MFKManager:
 
@@ -139,7 +140,7 @@ class MFKManager:
             for i, student in enumerate(students.values()):
                 # header
                 if i == 0:
-                    writer.writerow(all_student_key_labels)
+                    writer.writerow(student_columns.values())
                 row = [str(student[key])for key in student_columns if key != 'courses']
                 row.append(':'.join([str(course_id) for course_id in student['courses']]))
                 writer.writerow(row)
@@ -149,8 +150,8 @@ class MFKManager:
             for i, course in enumerate(courses.values()):
                 # header
                 if i == 0:
-                    writer.writerow(all_course_key_labels)
-                writer.writerow([str(course[key]) for key in all_course_keys])
+                    writer.writerow(course_columns.values())
+                writer.writerow([str(course[key]) for key in course_columns])
 
     def load_from_csv():
         courses = {}
@@ -159,7 +160,7 @@ class MFKManager:
             reader = csv.reader(f, delimiter=';')
             next(reader)
             for row in reader:
-                course = {key: value for key, value in zip(all_course_keys, row)}
+                course = {key: value for key, value in zip(course_columns.keys(), row)}
                 course['id'] = int(course['id'])
                 courses[course['id']] = course
 
