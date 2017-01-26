@@ -31,6 +31,7 @@ course_columns['total_places'] = 'Всего мест'
 course_columns['online'] = 'Online'
 course_columns['status'] = 'Статус'
 
+
 class MFKManager:
 
     def __init__(self, name_ru='', msu_faculty_id='', is_online='',
@@ -47,13 +48,12 @@ class MFKManager:
     def course_url(self, course_id):
         return '{}view?id={}'.format(BASE_URL, course_id)
 
-    def get_num_pages(html):
+    def get_num_pages(self, html):
         page = BeautifulSoup(html, 'lxml')
         numPages = page.find('ul', {'class': 'pagination'}).find_all('li')[-2].text
         return int(numPages)
 
-
-    def parse_list_page(html):
+    def parse_list_page(self, html):
         page = BeautifulSoup(html, 'lxml')
         courses_table = page.find('table', {'class': 'table'})
 
@@ -70,20 +70,18 @@ class MFKManager:
 
         return courses
 
-
-    def get_courses():
-
+    def get_courses(self):
         courses = []
 
         html = request.urlopen(BASE_URL + 'list').read()
-        num_pages = get_num_pages(html)
+        num_pages = self.get_num_pages(html)
         for page in range(num_pages):
-            with request.urlopen(courses_list_url(page)) as response:
+            with request.urlopen(self.courses_list_url(page)) as response:
                 html = response.read()
-                courses += parse_list_page(html)
+                courses += self.parse_list_page(html)
         return {course['id']: course for course in courses}
 
-    def parse_course_details_and_students(course):
+    def parse_course_details_and_students(self, course):
         """
         Search for course page using course['id'], add extra information
         to course dictionary in place
@@ -91,7 +89,7 @@ class MFKManager:
         :param course: dictionary
         :return: students -- dictionary
         """
-        with request.urlopen(course_url(course['id'])) as response:
+        with request.urlopen(self.course_url(course['id'])) as response:
             page = BeautifulSoup(response.read(), 'lxml')
             detailed_info = page.find('div', {'class': 'well'})
             # skip epty rows
@@ -122,7 +120,7 @@ class MFKManager:
 
         return students
 
-    def students_course_count(students):
+    def students_course_count(self, students):
         course_count = {}
         for id, student in students.items():
             try:
@@ -132,8 +130,7 @@ class MFKManager:
 
         return course_count
 
-
-    def save_to_scv(courses, students, course_labels=[], student_labels=[]):
+    def save_to_scv(self, courses, students, course_labels=[], student_labels=[]):
 
         with open('students.csv', 'w') as f:
             writer = csv.writer(f, delimiter=';')
@@ -153,7 +150,7 @@ class MFKManager:
                     writer.writerow(course_columns.values())
                 writer.writerow([str(course[key]) for key in course_columns])
 
-    def load_from_csv():
+    def load_from_csv(self):
         courses = {}
         students = {}
         with open('courses.csv') as f:
@@ -174,18 +171,18 @@ class MFKManager:
 
         return courses, students
 
-    def load_all(only_from_server=False):
+    def load_all(self, only_from_server=False):
         if not only_from_server:
             try:
                 print('Start loading from csv')
-                data = load_from_csv()
+                data = self.load_from_csv()
                 print('Done')
                 return data
             except FileNotFoundError as e:
                 print(e)
 
         print('Start loading from server')
-        courses = get_courses()
+        courses = self.get_courses()
         students_dup = []
         for course_id, course in courses.items():
             '''
@@ -193,7 +190,7 @@ class MFKManager:
                 break
             '''
             print('Parsing course {}: {}'.format(course_id, course['name']))
-            students_dup.append(parse_course_details_and_students(course))
+            students_dup.append(self.parse_course_details_and_students(course))
 
         # Merge students_dup in one list
         students_dup = [student for course_students in students_dup for student in course_students]
@@ -209,7 +206,7 @@ class MFKManager:
                 students[student['name']] = student
 
         try:
-            save_to_scv(courses, students)
+            self.save_to_scv(courses, students)
             print('Cached to csv')
         except Exception as e:
             print('Failed to save to csv')
@@ -217,5 +214,5 @@ class MFKManager:
         print('Done')
         return courses, students
 
-    def get_keys(d):
-        return(next(iter(d.values())).keys())
+    def get_keys(self, d):
+        return next(iter(d.values())).keys()
