@@ -1,1 +1,1 @@
-from .mfk_manager import MFKManager
+from .manager import MFKManager

@@ -2,7 +2,7 @@ import csv
 from urllib import request
 from collections import OrderedDict
 
-from .mfk_parser import MFKParser, BASE_URL
+from .parser import MFKParser, BASE_URL
 
 student_columns = OrderedDict()
 student_columns['name'] = 'Имя'
