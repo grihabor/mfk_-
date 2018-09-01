@@ -3,3 +3,7 @@
 *.xlsx
 .~*#
 __pycache__/
+msu.mfk.egg-info/
+build/
+dist/
+venv/
