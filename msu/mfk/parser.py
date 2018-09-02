@@ -1,8 +1,7 @@
 from urllib import request
 from bs4 import BeautifulSoup
 
-
-BASE_URL = 'http://new.mfk.msu.ru/course/'
+BASE_URL = 'http://lk.msu.ru/course/'
 URL_PARAMS_TEMPLATE = ['CourseSearch[name_ru]={name_ru}',
                        'CourseSearch[msu_faculty_id]={msu_faculty_id}',
                        'CourseSearch[is_online]={is_online}',

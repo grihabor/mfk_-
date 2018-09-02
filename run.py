@@ -1,4 +1,4 @@
-from mfk import MFKManager
+from msu.mfk import MFKManager
 
 mfkman = MFKManager(fall_year=2016, semester_number=2)
 
